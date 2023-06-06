@@ -3,6 +3,9 @@ import { Router, Event, NavigationStart, NavigationEnd, NavigationCancel, Naviga
 import { ApplicationStateService } from './shared/services/application.state.service';
 import { SecurityService } from './shared/services/security.service';
 import { ConfigurationService } from './shared/services/configuration.service';
+import { Title } from '@angular/platform-browser';
+import { environment } from '../environments/environment';
+import { version } from '../../package.json';
 
 @Component({
   selector: 'app-root',
@@ -10,18 +13,22 @@ import { ConfigurationService } from './shared/services/configuration.service';
 })
 export class AppComponent implements OnInit {
 
+  public version: string = "0";
   title = 'app';
   isAtuthenticated: boolean;
 
   closeLoading = true;
 
   constructor(private router: Router,
+    private titleService:Title,
     private securityService: SecurityService,
     private configurationService: ConfigurationService,
     private applicationState: ApplicationStateService) {
 
     //Atualiza as informações de processamento durante eventos de navegação
     this.setUpRoutingEvents();
+    this.titleService.setTitle(environment.appTitle || "SISPG");
+    this.version = version;
 
     //if (window.location.hash) {
     //  this.securityService.authenticatedCallback();

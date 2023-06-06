@@ -38,9 +38,11 @@
           },
           "configurations": {
             "production": {
-              "fileReplacements": [                
-              ],
-              "baseHref": "/safe/sisgp/programagestao/app/",
+              "fileReplacements": [{
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.prod.ts"
+              }],
+              "baseHref": "/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -54,7 +56,7 @@
             "development": {
               "fileReplacements": [
               ],
-              "baseHref": "/safe/sisgp/programagestao/app/",
+              "baseHref": "/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
