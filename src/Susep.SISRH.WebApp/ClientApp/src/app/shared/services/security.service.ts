@@ -4,10 +4,16 @@ import { Injectable, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { PerfilEnum } from 'src/app/modules/programa-gestao/enums/perfil.enum';
+import { EnumPerfilHelper } from 'src/app/modules/programa-gestao/helpers/enum-perfil.helper';
+import { IUnidade } from 'src/app/modules/unidade/models/unidade.model';
 import { PessoaDataService } from '../../modules/pessoa/services/pessoa.service';
+import { UnidadeDataService } from '../../modules/unidade/services/unidade.service';
 import { CustomHttpParamEncoder } from '../helpers/http.param.encoder.helper';
 import { TokenHelper } from '../helpers/token.helper';
+import { ApplicationResult } from '../models/application-result.model';
 import { IConnectTokenResponse } from '../models/connect.token.response.model';
+import { IPerfilUsuarioUnidade, IUsuario } from '../models/perfil-usuario.model';
 import { ApplicationStateService } from './application.state.service';
 import { ConfigurationService } from './configuration.service';
 import { DataService } from './data.service';
@@ -25,6 +31,7 @@ export class SecurityService implements OnInit {
     private applicationState: ApplicationStateService,
     private configurationService: ConfigurationService,
     private pessoaDataService: PessoaDataService,
+    private unidadeDataService: UnidadeDataService,
     private storage: StorageService,
     private location: Location) {
 
@@ -42,10 +49,12 @@ export class SecurityService implements OnInit {
 
     this.applicationState.changeAuthenticatedInformation(false);
     this.applicationState.changePerfisUsuario(null);
+    this.applicationState.changeUnidadeUsuario(null);
+    this.applicationState.changePerfisUsuarioPorUnidade(null);
   }
 
   //Armazena as informações de autenticação do usuário
-  public setUserAuthorizationData(code: any, token: any, idToken: any) {
+  async setUserAuthorizationData(code: any, token: any, idToken: any) {
 
     if (this.storage.retrieve('userAuthorizationToken') !== '') {
       this.storage.store('userAuthorizationToken', '');
@@ -56,22 +65,70 @@ export class SecurityService implements OnInit {
 
     if (token) {
       this.storage.store('userAuthorizationToken', token);
+      const perfil = await this.pessoaDataService.ObterPerfil().toPromise();
+      console.log('carregou perfil', perfil)
 
-      this.pessoaDataService.ObterPerfil().subscribe(perfil => {
-        this.applicationState.changeAuthenticatedInformation(true);
-        this.applicationState.changePerfisUsuario(perfil.retorno);
+      this.applicationState.changeAuthenticatedInformation(true);
+      this.applicationState.changePerfisUsuario(perfil.retorno);
+      this.unidadeDataService.ObterItem(perfil.retorno.unidadeId).subscribe(unidade => {
+        this.applicationState.changeUnidadeUsuario(unidade.retorno);
+      })
 
-        let returnUrl = this.storage.retrieve('returnUrl');
+      this.loadPerfisInfo(perfil.retorno);
 
-        if (!returnUrl)
-          returnUrl = '/dashboard';
+      let returnUrl = this.storage.retrieve('returnUrl');
 
-        this.router.navigateByUrl(returnUrl);
+      if (!returnUrl)
+        returnUrl = '/dashboard';
 
-        this.storage.store('returnUrl', null);
-      });
+      this.router.navigateByUrl(returnUrl);
+
+      this.storage.store('returnUrl', null);
+
     }
 
+  }
+
+  async loadPerfisInfo(perfil: IUsuario) {
+    //load unidades from perfis of user
+    const promisesUnidades : Promise<ApplicationResult<IUnidade>>[] = []
+    const unidadeIds : number[] = []
+    perfil.perfis.forEach(async (p) => {
+      p.unidades.forEach(unidadeId => {
+        if (unidadeIds.indexOf(unidadeId) == -1) {
+          unidadeIds.push(unidadeId)
+          promisesUnidades.push(this.unidadeDataService.ObterItem(unidadeId).toPromise());
+        }
+      })
+    });
+    const unidadesRes = await Promise.all(promisesUnidades);
+
+    //mount IPerfilUsuarioUnidade list
+    const perfisUnd : IPerfilUsuarioUnidade[] = []
+    perfil.perfis.forEach(async (p) => {
+      if (p.perfil == PerfilEnum.Gestor || p.perfil == PerfilEnum.Administrador) {
+        const info = EnumPerfilHelper.getPerfilUnidade(p.perfil, perfil.unidadeId, { descricao: 'PGD', sigla: 'PGD', unidadeId: 0, nome: 'PGD' });
+        if (info) { perfisUnd.push(info) }
+      } else if (p.unidades != null && p.unidades.length > 0) {
+        p.unidades.forEach(unidadeId => {
+          const unRes = unidadesRes.filter(ur => ur.retorno.unidadeId == unidadeId).shift();
+          if (unRes.retorno != null) {
+            const info = EnumPerfilHelper.getPerfilUnidade(p.perfil, perfil.unidadeId, unRes.retorno);
+            if (info) { perfisUnd.push(info) }
+          }
+        })
+      }
+    })
+    
+    //sort perfis
+    perfisUnd.sort((a,b) => a.perfilDescricao.localeCompare(b.perfilDescricao))
+    perfisUnd.sort(
+      (a,b) => 
+        ((a.isUnidadePai === b.isUnidadePai) ? 0 : a.isUnidadePai ? -1 : 1) ||
+        ((a.isUnidadeExercicio === b.isUnidadeExercicio) ? 0 : a.isUnidadeExercicio ? -1 : 1) ||
+        ((a.isUnidadeFilho === b.isUnidadeFilho) ? 0 : a.isUnidadeFilho ? -1 : 1)
+    )
+    this.applicationState.changePerfisUsuarioPorUnidade(perfisUnd);
   }
 
   //Obtém o token do cliente

@@ -4,6 +4,8 @@ import { IDashboard } from '../models/dashboard.model';
 import { PerfilEnum } from '../../programa-gestao/enums/perfil.enum';
 import { PlanoTrabalhoSituacaoEnum } from '../../programa-gestao/enums/plano-trabalho-situacao.enum';
 import { ApplicationStateService } from '../../../shared/services/application.state.service';
+import { IUnidade } from '../../unidade/models/unidade.model';
+import { IPerfilUsuarioUnidade } from 'src/app/shared/models/perfil-usuario.model';
 
 @Component({
   selector: 'dashboard',
@@ -17,6 +19,8 @@ export class DashboardComponent implements OnInit {
 
   chefe: boolean;
   usuarioLogadoId: number;
+  unidade: IUnidade;
+  perfisDashboard: IPerfilUsuarioUnidade[] = [];
 
   constructor(
     private pessoaDataService: PessoaDataService,
@@ -51,6 +55,14 @@ export class DashboardComponent implements OnInit {
         p.perfil === PerfilEnum.Diretor ||
         p.perfil === PerfilEnum.CoordenadorGeral ||
         p.perfil === PerfilEnum.ChefeUnidade).length > 0;
+    });
+
+    this.applicationState.perfisUsuarioPorUnidade.subscribe(appResult => {
+      this.perfisDashboard = appResult;
+    });
+
+    this.applicationState.unidadeUsuario.subscribe(appResult => {
+      this.unidade = appResult;
     });
 
     

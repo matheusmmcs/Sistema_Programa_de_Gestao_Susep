@@ -3,6 +3,7 @@ import { SecurityService } from '../../../services/security.service';
 import { ApplicationStateService } from '../../../services/application.state.service';
 import { IUsuario } from '../../../models/perfil-usuario.model';
 import { Router } from '@angular/router';
+import { IUnidade } from 'src/app/modules/unidade/models/unidade.model';
 
 @Component({
   selector: 'app-identity',
@@ -13,6 +14,7 @@ export class IdentityComponent implements OnInit {
   public isAuthenticated: boolean;
 
   perfil: IUsuario;
+  unidade: IUnidade;
 
   constructor(
     private applicationState: ApplicationStateService,
@@ -28,6 +30,11 @@ export class IdentityComponent implements OnInit {
     this.applicationState.perfilUsuario.subscribe(appResult => {
       this.perfil = appResult;
     });
+
+    this.applicationState.unidadeUsuario.subscribe(appResult => {
+      this.unidade = appResult;
+    });
+    
   }
 
   logoutClicked(event: any) {
