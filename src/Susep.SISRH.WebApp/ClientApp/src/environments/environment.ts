@@ -1,16 +1,17 @@
 export const environment = {
   production: false,
-  identityUrl: "http://homolog2.susep.gov.br/safe/autenticacao",
-  apiGatewayUrl: "http://homolog2.susep.gov.br/safe/sisrhapig/api/v1/",
+  identityUrl: "http://10.42.90.179/gateway/",
+  apiGatewayUrl: "http://10.42.90.179/gateway/",
+  appTitle: '[HOMOLOG] SISPG :: UFPI',
   modo: 'normal', // 'avancado',
-  valorPadraoTempoComparecimento: null,
-  valorPadraoTermosUso: null,
+  valorPadraoTempoComparecimento: null, // 'avancado',
+  valorPadraoTermosUso: null, // 'avancado',
   formaParticipacaoPlanoTrabalho: null,
   frequenciaPresencialObrigatoria: true,
   apiKeyGoogleVisio: "",
   client: {
-    id: "SISRH.Web",
-    secret: '', //"secret",
-    scope: "SISRH.API"
+    id: "SISGP.Web",
+    secret: 'secret',
+    scope: "SISGP.ProgramaGestao"
   },
 };
