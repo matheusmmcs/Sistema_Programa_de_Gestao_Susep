@@ -307,6 +307,12 @@
   font-size: 14px;
   font-weight: 600;
 }
+.user .unity-name {
+  color: #555555;
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+}
 .user .description {
   display: block;
   font-size: 12px;

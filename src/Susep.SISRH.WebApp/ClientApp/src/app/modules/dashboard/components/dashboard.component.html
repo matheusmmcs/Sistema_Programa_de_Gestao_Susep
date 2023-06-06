@@ -154,6 +154,38 @@
               </div>
             </div>
           </div>
+
+          <div class="col-lg-12 mb-4">
+            <h5 class="mt-1 mb-4"><i class="fa fa-id-card"></i> Perfis do Servidor</h5>
+            <div *ngIf="unidade != null">
+              <p>Veja abaixo seus perfis e suas respectivas unidades</p>
+            </div>
+            <div class="table-responsive">
+              <div class="br-table">
+                <div class="table full-width-table table-striped table-style">
+                  <table class="bg-white">
+                    <thead>
+                      <tr>
+                        <th scope="col">Perfil</th>
+                        <th scope="col">Unidade</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of perfisDashboard">
+                        <td [ngClass]="{'text-gray-7': item.isUnidadeExercicio, 'text-gray-5': item.isUnidadePai, 'text-gray-5': item.isUnidadeFilho}">{{item.perfilDescricao}}</td>
+                        <td [ngClass]="{'text-gray-7': item.isUnidadeExercicio, 'text-gray-5': item.isUnidadePai, 'text-gray-5': item.isUnidadeFilho}">{{item.unidade.nome}}</td>
+                      </tr>
+
+                      <tr *ngIf="perfisDashboard == null || perfisDashboard.length == 0">
+                        <td colspan="5" class="text-center">Nenhum perfil disponível</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

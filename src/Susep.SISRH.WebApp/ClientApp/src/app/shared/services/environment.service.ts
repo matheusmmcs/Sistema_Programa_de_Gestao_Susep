@@ -15,9 +15,11 @@ export class EnvironmentService implements OnInit {
   public frequenciaPresencialObrigatoria = null;
   public client: IClientConfiguration = {};
 
-  constructor() {}
+  constructor() {
+    this.loadEnvFile()
+  }
 
-  ngOnInit(): void {
+  loadEnvFile() {
     console.log(environment)
     this.identityUrl = environment.identityUrl;
     this.apiGatewayUrl = environment.apiGatewayUrl;
@@ -27,6 +29,10 @@ export class EnvironmentService implements OnInit {
     this.formaParticipacaoPlanoTrabalho = environment.formaParticipacaoPlanoTrabalho;
     this.frequenciaPresencialObrigatoria = environment.frequenciaPresencialObrigatoria;
     this.client = environment.client;
+  }
+
+  ngOnInit(): void {
+    this.loadEnvFile()
   }
 
 }

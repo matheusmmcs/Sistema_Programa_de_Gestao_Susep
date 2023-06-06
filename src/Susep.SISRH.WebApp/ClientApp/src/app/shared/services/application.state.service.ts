@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { IUsuario } from '../models/perfil-usuario.model';
+import { IUnidade } from 'src/app/modules/unidade/models/unidade.model';
+import { IPerfilUsuarioUnidade, IUsuario } from '../models/perfil-usuario.model';
 import { StorageService } from './storage.service';
 
 @Injectable()
@@ -12,8 +13,14 @@ export class ApplicationStateService {
   private isLoadingMessage = new BehaviorSubject<boolean>(false);
   isLoading = this.isLoadingMessage.asObservable();
 
+  private unidadeUsuarioMessage = new BehaviorSubject<IUnidade>(null);
+  unidadeUsuario = this.unidadeUsuarioMessage.asObservable();
+
   private perfilUsuarioMessage = new BehaviorSubject<IUsuario>(null);
   perfilUsuario = this.perfilUsuarioMessage.asObservable();
+
+  private perfisUsuarioPorUnidadeMessage = new BehaviorSubject<IPerfilUsuarioUnidade[]>(null);
+  perfisUsuarioPorUnidade = this.perfisUsuarioPorUnidadeMessage.asObservable();
 
   private modalOpenMessage = new BehaviorSubject<string>(null);
   modalOpen = this.modalOpenMessage.asObservable();
@@ -25,6 +32,12 @@ export class ApplicationStateService {
 
     const perfis = this.storageService.retrieve('perfilUsuario');
     this.changePerfisUsuario(perfis);
+
+    const unidade = this.storageService.retrieve('unidadeUsuario');
+    this.changeUnidadeUsuario(unidade);
+
+    const perfisUsuarioUnd = this.storageService.retrieve('perfisUsuarioPorUnidade');
+    this.changePerfisUsuarioPorUnidade(perfisUsuarioUnd);
   }
 
   changeAuthenticatedInformation(authenticated: boolean) {
@@ -35,6 +48,16 @@ export class ApplicationStateService {
   changePerfisUsuario(perfil: IUsuario) {
     this.storageService.store('perfilUsuario', perfil);
     this.perfilUsuarioMessage.next(perfil);
+  }
+
+  changeUnidadeUsuario(unidade: IUnidade) {
+    this.storageService.store('unidadeUsuario', unidade);
+    this.unidadeUsuarioMessage.next(unidade);
+  }
+
+  changePerfisUsuarioPorUnidade(perfis: IPerfilUsuarioUnidade[]) {
+    this.storageService.store('perfisUsuarioPorUnidade', perfis);
+    this.perfisUsuarioPorUnidadeMessage.next(perfis);
   }
 
   changeLoadingStatus(loading: boolean) {
