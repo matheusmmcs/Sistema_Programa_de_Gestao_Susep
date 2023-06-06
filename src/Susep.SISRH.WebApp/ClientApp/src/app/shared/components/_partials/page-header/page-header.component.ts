@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApplicationStateService } from '../../../services/application.state.service';
 //import { ListModalService } from '../../../modal/list-modal.service';
-import { MatDialogRef } from '@angular/material';
+import { environment } from '../../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -13,13 +13,14 @@ export class PageHeaderComponent implements OnInit {
 @ViewChild('modalLoading', { static: true }) modalLoading;
 
 isLoading = false;
+public isProd: boolean = false;
 
 constructor(
   private modalService: NgbModal,
   private applicationState: ApplicationStateService) { }
 
   ngOnInit() {
-    
+    this.isProd = environment.production;
     this.applicationState.isLoading.subscribe(isLoading => {
       this.isLoading = isLoading;
       this.modalService.dismissAll();

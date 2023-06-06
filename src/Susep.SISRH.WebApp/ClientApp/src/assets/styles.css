@@ -30,6 +30,10 @@ i {
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+.header-ds.header-test-bg {
+  background: #ec6c63;
+}
+
 .header-accessibility li {
   list-style: none;
   display:inline;
