@@ -29,6 +29,9 @@
   background: #f8f8f8;
 }
 
+.drop-box.drag-disabled {
+  cursor: default !important;
+}
 .todo .drop-box {
   border-left: solid 5px red;
 }

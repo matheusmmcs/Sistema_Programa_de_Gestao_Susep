@@ -44,6 +44,7 @@ import { ModoExibicaoGuard } from './helpers/modo-exibicao.guard.helper';
 import { FiltrarItensJaEscolhidosPipe } from './components/input-autocomplete-async/filtrar-ja-escolhidos.pipe';
 import { InputCurrencyComponent } from './components/input-currency/input-currency.component';
 import { InputCharsCunterComponent } from './components/input-chars-cunter/input-chars-cunter.component';
+import { SecureInputFullComponent } from './components/secure-input-full/secure-input-full.component';
 
 registerLocaleData(localePt)
 
@@ -76,6 +77,7 @@ registerLocaleData(localePt)
     InputCharsCunterComponent,
     CustomDatepickerComponent,
     SecureInputComponent,
+    SecureInputFullComponent,
     InputDatepickerDirective,
     InputRatingComponent,
     InputAutocompleteAsyncComponent,
@@ -95,6 +97,7 @@ registerLocaleData(localePt)
     InputCharsCunterComponent,
     CustomDatepickerComponent,
     SecureInputComponent,
+    SecureInputFullComponent,
     InputRatingComponent,
     InputAutocompleteAsyncComponent,
     InputCurrencyComponent,

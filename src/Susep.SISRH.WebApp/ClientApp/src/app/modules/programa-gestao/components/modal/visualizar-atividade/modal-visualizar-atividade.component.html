@@ -1,0 +1,41 @@
+<div class="br-modal is-large">
+  <div class="br-modal-dialog">
+    <div class="br-modal-content">
+      <div class="br-modal-header">
+        <h2 class="br-modal-title">Considerações</h2>
+        <button type="button" class="close" data-dismiss="br-modal" aria-label="Close" (click)="fecharModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="br-modal-body">
+        <div class="br-form">
+          <form [formGroup]="form">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="field">
+                  <field-validation [classList]="['br-input']" errorMessage="Necessário preencher caso a avaliação dada seja menor que 5." label="Descrição da atividade">
+                    <textarea maxlength="200" #descricao id="descricao" name="descricao" formControlName="descricao"></textarea>
+                    <input-chars-cunter [element]="descricao"></input-chars-cunter>
+                  </field-validation>
+                </div>
+              </div>
+            </div>
+            <div class="row" *ngIf="situacaoIdDetalhes == 503">
+              <div class="col-sm-12">
+                <div class="field">
+                  <field-validation [classList]="['br-input']" errorMessage="Necessário preencher caso a avaliação dada seja menor que 5." label="Considerações da conclusão">
+                    <textarea maxlength="200" #consideracoes id="consideracoes" name="consideracoes" formControlName="consideracoes"></textarea>
+                    <input-chars-cunter [element]="consideracoes"></input-chars-cunter>
+                  </field-validation>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="br-modal-footer justify-content-end">
+        <button class="br-button is-primary is-small" type="button" (click)="fecharModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
