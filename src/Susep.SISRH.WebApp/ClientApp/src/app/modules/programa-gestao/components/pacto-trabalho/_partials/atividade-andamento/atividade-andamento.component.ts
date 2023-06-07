@@ -10,6 +10,8 @@ import { PerfilEnum } from '../../../../enums/perfil.enum';
 import { DecimalValuesHelper } from '../../../../../../shared/helpers/decimal-valuesr.helper';
 import { IUsuario } from '../../../../../../shared/models/perfil-usuario.model';
 import { ApplicationStateService } from '../../../../../../shared/services/application.state.service';
+import { SortingHelper } from 'src/app/shared/helpers/sorting.helper';
+import { ISortConfig } from 'src/app/shared/models/sortConfig.model';
 
 @Component({
   selector: 'pacto-lista-atividade-andamento',
@@ -57,6 +59,8 @@ export class PactoListaAtividadeAndamentoComponent implements OnInit {
   minDataConclusao: any;
   maxDataConclusao: any;
 
+  sortConfig: ISortConfig;
+
   constructor(
     private modalService: NgbModal,
     private formBuilder: FormBuilder,
@@ -101,6 +105,7 @@ export class PactoListaAtividadeAndamentoComponent implements OnInit {
       this.verificarSeUsuarioPodeAceitar();
     });
 
+    this.sortConfig = {key:'itemCatalogo', order: 'asc'}
     this.dadosPacto.subscribe(val => this.carregarAtividades());
 
     this.dominioDataService.ObterSituacaoAtividadePactoTrabalho().subscribe(
@@ -145,6 +150,11 @@ export class PactoListaAtividadeAndamentoComponent implements OnInit {
         this.tempoPrevistoTotal = this.dadosPacto.value.atividades.reduce((a, b) => a + b.tempoPrevistoTotal, 0);
         this.tempoRealizado = this.dadosPacto.value.atividades.reduce((a, b) => a + b.tempoRealizado, 0);
         this.tempoHomologado = this.dadosPacto.value.atividades.reduce((a, b) => a + b.tempoHomologado, 0);
+        //sort list itens
+        this.dadosPacto.value.atividades = SortingHelper.sort(
+          this.dadosPacto.value.atividades,
+          this.sortConfig
+        )
       }
     );
 
@@ -341,5 +351,11 @@ export class PactoListaAtividadeAndamentoComponent implements OnInit {
   fecharModal() {
     this.atividadeEdicao = {};
     this.modalService.dismissAll();
+  }
+
+  changeOrderList(value:string) {
+    const order = this.sortConfig.key===value ? (this.sortConfig.order==='desc' ? 'asc' : 'desc') : 'asc';
+    this.sortConfig = {key:value, order};
+    this.carregarAtividades();
   }
 }
