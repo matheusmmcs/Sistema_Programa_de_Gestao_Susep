@@ -324,3 +324,11 @@ input, select {
   background-color: #f8f8f8 !important;
   cursor: default;
 }
+
+table tbody tr.row-disabled {
+  background-color: #ffcaca !important;
+}
+
+table tbody tr.row-disabled:hover {
+  background-color: #ffa4a4 !important;
+}

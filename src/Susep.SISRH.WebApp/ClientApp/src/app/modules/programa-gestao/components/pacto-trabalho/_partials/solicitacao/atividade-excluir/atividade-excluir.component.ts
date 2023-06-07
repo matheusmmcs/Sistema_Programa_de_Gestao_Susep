@@ -47,6 +47,31 @@ export class AtividadeExcluirComponent implements OnInit {
     }
   }
 
+  possuiSolicitacaoPendente(idPactoTrabalhoAtividade) {
+    let hasSolicitacoes = false;
+
+    this.solicitacoes.forEach(s => {
+      try {
+        //apenas solicitacoes de exclusao
+        if (s.tipoSolicitacaoId === 604) {
+          const sol = JSON.parse(s.dadosSolicitacao);
+          //apenas solicitacoes de exclusao para esse pacto especifico e que nao tenha solicitacao sem analise
+          if (sol.pactoTrabalhoAtividadeId == idPactoTrabalhoAtividade &&
+            s.analisado == false)
+            hasSolicitacoes = true;
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    });
+
+    return hasSolicitacoes;
+  }
+
+  possuiSolicitacaoPendenteDesc(idPactoTrabalhoAtividade) {
+    return this.possuiSolicitacaoPendente(idPactoTrabalhoAtividade) ? 'Solicitação Pendente' : '';
+  }
+
   justificarEstouroDePrazo() {
     if (this.form.valid) {
       const value = this.form.value;

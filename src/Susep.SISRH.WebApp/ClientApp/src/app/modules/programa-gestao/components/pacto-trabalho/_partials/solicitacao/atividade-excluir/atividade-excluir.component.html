@@ -24,8 +24,27 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr *ngFor="let item of atividades">
-                                  <td>{{item.itemCatalogo}}</td>
+                                <tr *ngFor="let item of atividades" [class.row-disabled]="possuiSolicitacaoPendente(item.pactoTrabalhoAtividadeId)">
+                                  <td>
+                                    <div>
+                                      <b>{{possuiSolicitacaoPendenteDesc(item.pactoTrabalhoAtividadeId)}}</b>
+                                    </div>
+                                    <div>
+                                      <b>{{item.itemCatalogo}}</b>
+                                    </div>
+                                    <div>
+                                      Situação: {{item.situacao}}
+                                    </div>
+                                    <div>
+                                      Local de Execução: {{item.execucaoRemota ? 'Remoto' : 'Presencial'}} / Tempo Previsto: {{item.tempoPrevistoPorItem}}
+                                    </div>
+                                    <div>
+                                      Descrição: {{item.descricao}}
+                                    </div>
+                                    <div *ngIf="item.consideracoes != null">
+                                      Anotações Realizadas: {{item.consideracoes}}
+                                    </div>
+                                  </td>
                                   <td>
                                     <mat-slide-toggle class="ml-2"
                                                       [(ngModel)]="item.adicionadoCalendario"
