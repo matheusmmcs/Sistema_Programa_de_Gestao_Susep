@@ -1,9 +1,10 @@
 import { Component, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject } from 'rxjs';
 import { DecimalValuesHelper } from 'src/app/shared/helpers/decimal-valuesr.helper';
 import { IDominio } from 'src/app/shared/models/dominio.model';
+import { ModalidadeHelper } from '../../../helpers/modalidade.helper';
 import { IPactoTrabalho, IPactoTrabalhoAtividade } from '../../../models/pacto-trabalho.model';
 
 @Component({
@@ -34,6 +35,8 @@ constructor(
 
   init() {
     this.form = this.formBuilder.group({
+      modalidadeDesc: [{value: '', disabled: true}, []],
+      tempoPrevistoDesc: [{value: '', disabled: true}, []],
       situacaoId: [null, [Validators.required]],
       dataInicio: [null, []],
       dataFim: [null, []],
@@ -62,6 +65,8 @@ constructor(
   
   fillForm() {
     this.form.patchValue({
+      modalidadeDesc: ModalidadeHelper.descricaoModalidadeAtividade(this.atividadeEdicao),
+      tempoPrevistoDesc: this.atividadeEdicao.tempoPrevistoPorItem,
       situacaoId: this.atividadeEdicao.situacaoId,
       dataInicio: this.atividadeEdicao.dataInicio,
       dataFim: this.atividadeEdicao.dataFim,
@@ -142,6 +147,12 @@ constructor(
       if (dataFim < dataInicio)
         this.form.get('dataFim').setValue(null);
     }    
+  }
+
+  alterarDataFim() {
+    if (this.form.get('dataFim').value) {
+      this.maxDataInicio = this.formatarData(new Date(this.form.get('dataFim').value));
+    }
   }
 
   fecharModal() {

@@ -10,6 +10,8 @@ import { DominioDataService } from 'src/app/shared/services/dominio.service';
 import { ModalEditarAtividadeComponent } from '../../../modal/editar-atividade/modal-editar-atividade.component';
 import { ApplicationStateService } from 'src/app/shared/services/application.state.service';
 import { IUsuario } from 'src/app/shared/models/perfil-usuario.model';
+import { SortingHelper } from 'src/app/shared/helpers/sorting.helper';
+import { ModalidadeHelper } from 'src/app/modules/programa-gestao/helpers/modalidade.helper';
 
 @Component({
   selector: 'atividade-pacto-kanban',
@@ -52,14 +54,22 @@ export class AtividadesPactoKanbanComponent implements OnInit {
 
   }
 
+  checkRemotoPresencial() : boolean {
+    return ModalidadeHelper.checkRemotoPresencial(this.dadosPacto.value.formaExecucaoId);
+  }
+
+  descricaoModalidadeAtividade(item:IPactoTrabalhoAtividade) : string {
+    return ModalidadeHelper.descricaoModalidadeAtividade(item);
+  }
+
   carregarAtividades() {
     this.pactoTrabalhoDataService.ObterAtividades(this.dadosPacto.value.pactoTrabalhoId).subscribe(
       resultado => {
         this.dadosPacto.value.atividades = resultado.retorno;
 
-        this.todo = this.dadosPacto.value.atividades.filter(a => a.situacaoId === 501);
-        this.doing = this.dadosPacto.value.atividades.filter(a => a.situacaoId === 502);
-        this.done = this.dadosPacto.value.atividades.filter(a => a.situacaoId === 503);
+        this.todo = SortingHelper.sort(this.dadosPacto.value.atividades.filter(a => a.situacaoId === 501), {key:'itemCatalogo', order: 'asc'});
+        this.doing = SortingHelper.sort(this.dadosPacto.value.atividades.filter(a => a.situacaoId === 502), {key:'itemCatalogo', order: 'asc'});
+        this.done = SortingHelper.sort(this.dadosPacto.value.atividades.filter(a => a.situacaoId === 503), {key:'itemCatalogo', order: 'asc'});
       }
     );
   }
