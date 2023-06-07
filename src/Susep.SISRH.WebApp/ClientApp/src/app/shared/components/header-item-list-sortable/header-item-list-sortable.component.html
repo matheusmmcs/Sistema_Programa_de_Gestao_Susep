@@ -1,0 +1,5 @@
+<span class="pointer" [class.active]="sortConfig.key===key" (click)="onChangeSort()">
+  {{description}}
+  <i *ngIf="isUp()" [class.fa-arrow-up]="isUp()" class="fas"></i>
+  <i *ngIf="isDown()" [class.fa-arrow-down]="isDown()" class="fas"></i>
+</span>

@@ -6,15 +6,15 @@
           <table class="full-width-table table-striped table-style mat-elevation-z8">
             <thead>
               <tr>
-                <th>Atividade</th>
-                <th>Situação</th>
-                <th class="text-right">Tempo planejado</th>
-                <th class="text-center">Data início</th>
-                <th class="text-center">Data fim</th>
-                <th *ngIf="teletrabalhoParcial">Local de execução</th>
-                <th class="text-right">Tempo despendido</th>
-                <th class="text-center">Avaliação</th>
-                <th class="text-right">Tempo homologado</th>
+                <th header-item-list-sortable description="Atividade" key="itemCatalogo" [sortConfig]="sortConfig" (fnSortListEvent)="changeOrderList($event)"></th>
+                <th header-item-list-sortable description="Situação" key="situacao" [sortConfig]="sortConfig" (fnSortListEvent)="changeOrderList($event)"></th>
+                <th class="text-right" header-item-list-sortable description="Tempo planejado" key="tempoPrevistoTotal" [sortConfig]="sortConfig" (fnSortListEvent)="changeOrderList($event)"></th>
+                <th class="text-center" header-item-list-sortable description="Data início" key="dataInicio" [sortConfig]="sortConfig" (fnSortListEvent)="changeOrderList($event)"></th>
+                <th class="text-center" header-item-list-sortable description="Data fim" key="dataFim" [sortConfig]="sortConfig" (fnSortListEvent)="changeOrderList($event)"></th>
+                <th *ngIf="teletrabalhoParcial" header-item-list-sortable description="Local de execução" key="execucaoRemota" [sortConfig]="sortConfig" (fnSortListEvent)="changeOrderList($event)"></th>
+                <th class="text-right" header-item-list-sortable description="Tempo despendido" key="tempoRealizado" [sortConfig]="sortConfig" (fnSortListEvent)="changeOrderList($event)"></th>
+                <th class="text-center" header-item-list-sortable description="Avaliação" key="nota" [sortConfig]="sortConfig" (fnSortListEvent)="changeOrderList($event)"></th>
+                <th class="text-right" header-item-list-sortable description="Tempo homologado" key="tempoHomologado" [sortConfig]="sortConfig" (fnSortListEvent)="changeOrderList($event)"></th>
                 <th style="width:90px"></th>
               </tr>
             </thead>

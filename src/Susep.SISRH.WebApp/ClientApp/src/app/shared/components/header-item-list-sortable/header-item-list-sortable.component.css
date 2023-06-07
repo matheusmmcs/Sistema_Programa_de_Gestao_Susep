@@ -1,0 +1,6 @@
+span.pointer {
+  cursor: pointer;
+}
+span.active {
+  color: #0b65f5 !important;
+}

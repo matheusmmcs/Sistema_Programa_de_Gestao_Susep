@@ -28,6 +28,7 @@ import { HomePublicaComponent } from './components/_partials/home-publica/home-p
 import { PaginationComponent } from './components/_partials/pagination/pagination.component';
 import { InputRatingComponent } from './components/input-rating/input-rating.component';
 import { InputAutocompleteAsyncComponent } from './components/input-autocomplete-async/input-autocomplete-async.component';
+import { HeaderItemListSortable } from './components/header-item-list-sortable/header-item-list-sortable.component';
 
 //Helpers
 import { AuthGuard } from './helpers/authorization.guard.helper';
@@ -80,6 +81,7 @@ registerLocaleData(localePt)
     InputAutocompleteAsyncComponent,
     FiltrarItensJaEscolhidosPipe,
     InputCurrencyComponent,
+    HeaderItemListSortable,
   ],
   exports: [
     HomeComponent,
@@ -96,6 +98,7 @@ registerLocaleData(localePt)
     InputRatingComponent,
     InputAutocompleteAsyncComponent,
     InputCurrencyComponent,
+    HeaderItemListSortable,
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'pt-BR' },
