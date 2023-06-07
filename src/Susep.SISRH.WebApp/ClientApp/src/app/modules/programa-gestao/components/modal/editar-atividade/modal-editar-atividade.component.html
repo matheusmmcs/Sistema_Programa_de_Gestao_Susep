@@ -13,6 +13,13 @@
             <div class="row">
               <div class="col-sm-12">
                 <div class="field">
+                  <b>{{atividadeEdicao.itemCatalogo}}</b>
+                </div>
+              </div>                
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="field">
                   <field-validation [classList]="['br-select', 'is-medium']" errorMessage="Campo obrigatório." label="Situação">
                     <select id="situacaoId" name="situacaoId" formControlName="situacaoId" (change)="mudarSituacao($event.target.value)">
                       <option value="">Selecione uma opção</option>
@@ -33,7 +40,7 @@
               <div class="col-sm-6" *ngIf="situacaoId == 503">
                 <div class="field">
                   <field-validation [classList]="['br-input']" errorMessage="Campo obrigatório." label="Data de fim">
-                    <custom-datepicker formControlName="dataFim" [minDate]="minDataConclusao" [maxDate]="maxDataConclusao" [timePicker]="true" placeholder="Selecione uma data"></custom-datepicker>
+                    <custom-datepicker formControlName="dataFim" [minDate]="minDataConclusao" [maxDate]="maxDataConclusao" [timePicker]="true" placeholder="Selecione uma data" (change)="alterarDataFim()"></custom-datepicker>
                   </field-validation>
                 </div>
               </div>
@@ -46,6 +53,22 @@
                   </field-validation>
                 </div>
               </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="field">
+                  <field-validation [classList]="['br-input']" label="Local de Execução">
+                    <input id="modalidadeDesc" type="text" name="modalidadeDesc" formControlName="modalidadeDesc" />
+                  </field-validation>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="field">
+                  <field-validation [classList]="['br-input']" label="Tempo Planejado (em horas)">
+                    <input id="tempoPrevistoDesc" type="text" name="tempoPrevistoDesc" formControlName="tempoPrevistoDesc" />
+                  </field-validation>
+                </div>
+              </div>                
             </div>
             <div class="row">
               <div class="col-sm-12">

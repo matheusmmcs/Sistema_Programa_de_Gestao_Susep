@@ -11,6 +11,7 @@ import { ModalEditarAtividadeComponent } from '../../../modal/editar-atividade/m
 import { ApplicationStateService } from 'src/app/shared/services/application.state.service';
 import { IUsuario } from 'src/app/shared/models/perfil-usuario.model';
 import { SortingHelper } from 'src/app/shared/helpers/sorting.helper';
+import { ModalidadeHelper } from 'src/app/modules/programa-gestao/helpers/modalidade.helper';
 
 @Component({
   selector: 'atividade-pacto-kanban',
@@ -51,6 +52,14 @@ export class AtividadesPactoKanbanComponent implements OnInit {
       this.usuarioPodeAlterar = this.perfilUsuario.pessoaId == this.dadosPacto.value.pessoaId;
     });
 
+  }
+
+  checkRemotoPresencial() : boolean {
+    return ModalidadeHelper.checkRemotoPresencial(this.dadosPacto.value.formaExecucaoId);
+  }
+
+  descricaoModalidadeAtividade(item:IPactoTrabalhoAtividade) : string {
+    return ModalidadeHelper.descricaoModalidadeAtividade(item);
   }
 
   carregarAtividades() {
