@@ -1,0 +1,42 @@
+<div class="br-modal is-large">
+  <div class="br-modal-dialog">
+    <div class="br-modal-content">
+      <div class="br-modal-header">
+        <h2 class="br-modal-title">Avaliar atividade</h2>
+        <button type="button" class="close" data-dismiss="br-modal" aria-label="Close" (click)="fecharModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="br-modal-body">
+        <div class="br-form">
+          <form [formGroup]="form">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="field">
+                  <div>
+                    <label>Avaliação</label>
+                    <input-rating name="avaliacao" [notaLimite]="5" formControlName="avaliacao"></input-rating>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="field">
+                  <field-validation [classList]="['br-input']" errorMessage="Necessário preencher caso a avaliação dada seja menor que 5." label="Justificativa">
+                    <textarea maxlength="200" #justificativa id="justificativa" placeholder="Insira uma justificativa" name="justificativa" formControlName="justificativa"></textarea>
+                    <input-chars-cunter [element]="justificativa"></input-chars-cunter>
+                  </field-validation>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="br-modal-footer justify-content-end">
+        <button class="br-button is-tertiary is-small" type="button" (click)="fecharModal()">Cancelar</button>
+        <button class="br-button is-primary is-small" type="button" *ngIf="usuarioPodeAvaliar" (click)="salvarAvaliacao()" [disabled]="!form.valid">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>

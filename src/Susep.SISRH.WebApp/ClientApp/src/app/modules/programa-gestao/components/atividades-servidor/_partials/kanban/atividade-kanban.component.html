@@ -8,7 +8,7 @@
              [cdkDropListData]="todo"
              class="drop-list"
              (cdkDropListDropped)="drop($event)">
-          <div class="drop-box" *ngFor="let item of todo" [cdkDragData]="item" cdkDrag>{{item.itemCatalogo}}</div>
+          <div class="drop-box" [class.drag-disabled]="!usuarioPodeAlterar" *ngFor="let item of todo" [cdkDragDisabled]="!usuarioPodeAlterar" [cdkDragData]="item" cdkDrag (click)="modalEditar(item.pactoTrabalhoAtividadeId)">{{item.itemCatalogo}}</div>
         </div>
       </div>
     </div>
@@ -21,7 +21,7 @@
              [cdkDropListData]="doing"
              class="drop-list"
              (cdkDropListDropped)="drop($event)">
-          <div class="drop-box" *ngFor="let item of doing" [cdkDragData]="item" [cdkDragDisabled]="item.formaCalculoTempoItemCatalogoId === 201" cdkDrag>
+             <div class="drop-box" [class.drag-disabled]="!usuarioPodeAlterar" *ngFor="let item of doing" [cdkDragDisabled]="!usuarioPodeAlterar" [cdkDragData]="item" [cdkDragDisabled]="item.formaCalculoTempoItemCatalogoId === 201" cdkDrag (click)="modalEditar(item.pactoTrabalhoAtividadeId)">
             <div>
               {{item.itemCatalogo}}<br />
               <smaLl class="ml-4 text-gray-4" *ngIf="item.dataInicio">Início <span class="text-gray-7">{{item.dataInicio | date: 'dd/MM/yyyy HH:mm'}}</span></smaLl>
@@ -39,7 +39,7 @@
              [cdkDropListData]="done"
              class="drop-list"
              (cdkDropListDropped)="drop($event)">
-          <div class="drop-box" *ngFor="let item of done" [cdkDragData]="item" [cdkDragDisabled]="item.nota" cdkDrag>
+             <div class="drop-box" [class.drag-disabled]="!usuarioPodeAlterar" *ngFor="let item of done" [cdkDragDisabled]="!usuarioPodeAlterar" [cdkDragData]="item" [cdkDragDisabled]="item.nota" cdkDrag (click)="modalEditar(item.pactoTrabalhoAtividadeId)">
             <div>
               {{item.itemCatalogo}}<br />
               <smaLl class="ml-4 text-gray-4" *ngIf="item.dataInicio">Início <span class="text-gray-7">{{item.dataInicio | date: 'dd/MM/yyyy HH:mm'}}</span></smaLl><br />

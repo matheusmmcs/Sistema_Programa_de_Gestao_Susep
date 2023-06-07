@@ -67,6 +67,9 @@ import { AgendamentoPresencialComponent } from './components/agendamento-presenc
 import { PactoListObservacaoComponent } from './components/pacto-trabalho/_partials/observacao/observacao-lista.component';
 import { ObservacoesPactoNovaComponent } from './components/pacto-trabalho/_partials/observacao/observacao-nova/observacao-nova.component';
 import { AgendamentoDataService } from './services/agendamento.service';
+import { ModalEditarAtividadeComponent } from './components/modal/editar-atividade/modal-editar-atividade.component';
+import { ModalVisualizarAtividadeComponent } from './components/modal/visualizar-atividade/modal-visualizar-atividade.component';
+import { ModalAvaliarAtividadeComponent } from './components/modal/avaliar-atividade/modal-avaliar-atividade.component';
 
 registerLocaleData(localePt)
 
@@ -132,6 +135,9 @@ registerLocaleData(localePt)
     PlanoHabilitacaoComponent,
     AssuntosAssociadosComponent,
     AgendamentoPresencialComponent,
+    ModalEditarAtividadeComponent,
+    ModalVisualizarAtividadeComponent,
+    ModalAvaliarAtividadeComponent,
   ],
   exports: [
     DashboardComponent,
@@ -151,6 +157,11 @@ registerLocaleData(localePt)
     PactoTrabalhoDetalhesComponent,
     AtividadesPactoAtualComponent,
     AtividadesServidorHistoricoComponent
+  ],
+  entryComponents: [
+    ModalEditarAtividadeComponent,
+    ModalVisualizarAtividadeComponent,
+    ModalAvaliarAtividadeComponent,
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'pt-BR' },
