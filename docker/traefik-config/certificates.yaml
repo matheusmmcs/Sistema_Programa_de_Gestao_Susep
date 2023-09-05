@@ -1,0 +1,6 @@
+
+
+tls:
+  certificates:
+    - certFile: /certificates/ufpibr_bundle.pem
+      keyFile: /certificates/ufpibr.key

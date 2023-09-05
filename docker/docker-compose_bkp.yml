@@ -1,0 +1,121 @@
+version: "3.3"
+
+services:
+  # Proxy reverso
+  traefik_prod:
+    hostname: caminhointernoservicos
+    image: traefik:2.9
+    # Entrypoints:
+    #  - web: O que é exposto na rede pela porta 80
+    #  - web-interno: Não exposto na rede - Ponto de entrada na 
+    #                 rede interna do Traefik utilizado para a comunicação do 
+    #                 api-gateway e web-api
+    command: >
+      --providers.docker=true
+      --entrypoints.web.address=:8000
+      --entrypoints.web-interno.address=:80
+      --entrypoints.web-secure.address=:8443
+      --log.level="INFO"
+      --providers.docker.exposedbydefault=false
+    restart: unless-stopped
+    # --providers.file.directory=/traefik-config
+    ports:
+      - 8001:8000 # The HTTP port
+      #- 443:8443 # The HTTPS port
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+     - traefik.enable=true
+     - traefik.http.routers.traefik_prod.rule=Host(`traefik.api.localhost`)
+     - traefik.http.routers.traefik_prod.entryPoints=web
+     - traefik.http.routers.traefik_prod.tls=false
+     - traefik.http.services.traefik_prod.loadbalancer.server.port=8080
+    networks:
+      - pgd_prod
+    
+  web-api_prod:
+    # Futuro oficial do Governo Federal
+    image: ghcr.io/spbgovbr/sistema_programa_de_gestao_susep/sgd:v1.8
+    #image: susep-1.8.1
+    # Imagem caso você queira testar na sua máquina
+    #image: susep
+    working_dir: /app/api/
+    command: dotnet Susep.SISRH.WebApi.dll
+    volumes:
+      - ./api/Settings:/app/api/Settings:ro
+      #- ../install/Arquivos de configuração/1. Susep.SISRH.WebApi/Settings:/app/api/Settings:ro
+      - ../log/api:/app/api/Logs:rw
+    env_file:
+      - ./web-api.env
+    # Habilitar somente para debug
+    # ports:
+    #   - 8082:80
+    labels:
+     - traefik.enable=true
+     - traefik.http.routers.web-api_prod.rule=PathPrefix(`/`)
+     - traefik.http.routers.web-api_prod.entrypoints=web-interno
+     - traefik.http.routers.web-api_prod.tls=false
+     - traefik.http.services.web-api_prod.loadbalancer.server.port=80
+     - traefik.http.services.web-api_prod.loadbalancer.server.scheme=http
+     - traefik.http.routers.web-api_prod.middlewares=stripprefix_web_api_prod
+     - traefik.http.middlewares.stripprefix_web_api_prod.stripprefix.prefixes=/SISGP/api/
+    networks:
+      - pgd_prod
+
+  api-gateway_prod:
+    image: ghcr.io/spbgovbr/sistema_programa_de_gestao_susep/sgd:v1.8
+    #image: susep-1.8.1
+    # Imagem caso você queira testar na sua máquina
+    #image: susep
+    command: dotnet Susep.SISRH.ApiGateway.dll
+    working_dir: /app/gateway/
+    volumes:
+      - ./gateway/Settings:/app/gateway/Settings:ro
+      - ../log/gateway:/app/gateway/Logs:rw
+    env_file:
+      - ./api-gateway.env
+    labels:
+     - traefik.enable=true
+     - traefik.http.routers.gateway_prod.rule=PathPrefix(`/gateway`)
+     - traefik.http.routers.gateway_prod.entrypoints=web
+     - traefik.http.routers.gateway_prod.tls=false
+     - traefik.http.services.gateway_prod.loadbalancer.server.port=80
+     - traefik.http.services.gateway_prod.loadbalancer.server.scheme=http
+     - traefik.http.routers.gateway_prod.middlewares=gateway_prod_stripprefix
+     - traefik.http.middlewares.gateway_prod_stripprefix.stripprefix.prefixes=/gateway/
+    networks:
+      - pgd_prod
+
+  web-app_prod:
+    #image: ghcr.io/spbgovbr/sistema_programa_de_gestao_susep/sgd:v1.8
+    image: susep-1.8.6-ufpi
+    # Imagem caso você queira testar na sua máquina
+    #image: susep
+    command: dotnet Susep.SISRH.WebApp.dll
+    working_dir: /app/app/
+    volumes:
+      - ./app/env.js:/app/app/ClientApp/dist/env.js:ro
+    labels:
+     - traefik.enable=true
+     - traefik.http.routers.app_prod.rule=PathPrefix(`/`)
+     - traefik.http.routers.app_prod.entrypoints=web
+     - traefik.http.routers.app_prod.tls=false
+     - traefik.http.services.app_prod.loadbalancer.server.port=80
+     - traefik.http.services.app_prod.loadbalancer.server.scheme=http
+     - traefik.http.routers.app_prod.middlewares=app_prod_stripprefix
+     - traefik.http.middlewares.app_prod_stripprefix.stripprefix.prefixes=/safe/sisgp/programagestao/app/
+    networks:
+      - pgd_prod
+
+  ## FIXME - Utilização do Nginx no lugar do aspnet
+  # web-app-nginx:
+  #   image: nginx:1.19-alpine
+  #   volumes:
+  #     - ./install/3. Susep.SISRH.WebApp/ClientApp/dist:/usr/share/nginx/html:rw
+  #     - ./install/Arquivos de configuração/3. Susep.SISRH.WebApp/ClientApp/dist/env.js:/usr/share/nginx/html/env.js:ro
+  #   ports:
+  #     - 8080:80
+
+networks:
+  pgd_prod:
+    driver: bridge

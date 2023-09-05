@@ -40,3 +40,5 @@ COPY --chown=pgd:susep --from=builder /src/Susep.SISRH.WebApi/bin/Release/netcor
 COPY --chown=pgd:susep --from=builder /src/Susep.SISRH.ApiGateway/bin/Release/netcoreapp3.1/publish /app/gateway/
 # WebApp
 COPY --chown=pgd:susep --from=builder /src/Susep.SISRH.WebApp/bin/Release/netcoreapp3.1/publish /app/app/
+#RUN rm -rf /app/app/ClientApp/dist/
+#COPY --chown=pgd:susep ./src/Susep.SISRH.WebApp/ClientApp/dist /app/app/ClientApp/dist/

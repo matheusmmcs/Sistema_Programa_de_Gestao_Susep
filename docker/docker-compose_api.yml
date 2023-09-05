@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3.8"
 
 services:
   # Proxy reverso
@@ -17,42 +17,22 @@ services:
       --entrypoints.web-secure.address=:8443
       --log.level="INFO"
       --providers.docker.exposedbydefault=false
-      --providers.file.directory=/configuration
-      --providers.file.watch=true 
-    restart: always
+    restart: unless-stopped
     # --providers.file.directory=/traefik-config
     ports:
       - 80:8000 # The HTTP port
       - 443:8443 # The HTTPS port
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /home/desenvolvimento/sispg/Sistema_Programa_de_Gestao_Susep_prod/docker/traefik-config/:/configuration/
-      - /etc/ssl/icpedu/:/certificates/
-      - ./web.config:/app/gateway/web.config
     labels:
      - traefik.enable=true
-    # - traefik.tls.routers.traefik.rule=Host(`traefik.api.localhost`)
-    # - traefik.tls.routers.traefik.entryPoints=web-secure
-    # - traefik.tls.routers.traefik.tls=true
-    # - traefik.tls.services.traefik.loadbalancer.server.port=8080
      - traefik.http.routers.traefik.rule=Host(`traefik.api.localhost`)
-     - traefik.http.routers.traefik.entryPoints=web-secure
-     - traefik.http.routers.traefik.tls=true
+     - traefik.http.routers.traefik.entryPoints=web
+     - traefik.http.routers.traefik.tls=false
      - traefik.http.services.traefik.loadbalancer.server.port=8080
-     #Redirecionamento https
-     - traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)
-     - traefik.http.routers.http-catchall.entrypoints=web
-     - traefik.http.routers.http-catchall.middlewares=redirect-to-https
-     - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-    
     networks:
       - pgd
     
-#tls:
-#  certificates:
-#    - certFile: /etc/ssl/icpedu/ufpibr.cert
-#      keyFile: /etc/ssl/icpedu/ufpibr.key
-
   web-api:
     # Futuro oficial do Governo Federal
     image: ghcr.io/spbgovbr/sistema_programa_de_gestao_susep/sgd:v1.8
@@ -65,7 +45,6 @@ services:
       - ./api/Settings:/app/api/Settings:ro
       #- ../install/Arquivos de configuração/1. Susep.SISRH.WebApi/Settings:/app/api/Settings:ro
       - ../log/api:/app/api/Logs:rw
-    restart: always
     env_file:
       - ./web-api.env
     # Habilitar somente para debug
@@ -93,7 +72,6 @@ services:
     volumes:
       - ./gateway/Settings:/app/gateway/Settings:ro
       - ../log/gateway:/app/gateway/Logs:rw
-    restart: always
     env_file:
       - ./api-gateway.env
     labels:
@@ -110,19 +88,18 @@ services:
 
   web-app:
     #image: ghcr.io/spbgovbr/sistema_programa_de_gestao_susep/sgd:v1.8
-    image: susep-1.8.6-ufpi
+    image: susep
     # Imagem caso você queira testar na sua máquina
     #image: susep
     command: dotnet Susep.SISRH.WebApp.dll
     working_dir: /app/app/
     volumes:
       - ./app/env.js:/app/app/ClientApp/dist/env.js:ro
-    restart: always
     labels:
      - traefik.enable=true
      - traefik.http.routers.app.rule=PathPrefix(`/`)
-     - traefik.http.routers.app.entrypoints=web-secure
-     - traefik.http.routers.app.tls=true
+     - traefik.http.routers.app.entrypoints=web
+     - traefik.http.routers.app.tls=false
      - traefik.http.services.app.loadbalancer.server.port=80
      - traefik.http.services.app.loadbalancer.server.scheme=http
      - traefik.http.routers.app.middlewares=app_stripprefix
@@ -139,8 +116,7 @@ services:
   #   ports:
   #     - 8080:80
 
-
-
 networks:
   pgd:
+    name: pgd
     driver: bridge
