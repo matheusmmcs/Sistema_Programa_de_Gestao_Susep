@@ -2187,7 +2187,7 @@
   ],
   "GlobalConfiguration": {
     "ServiceDiscoveryProvider": {
-      "BaseUrl": "http://api-gateway/gateway"
+      "BaseUrl": "http://sispg.ufpi.br/gateway"
     }
   }
 }
