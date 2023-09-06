@@ -12,10 +12,15 @@ services:
     #                 api-gateway e web-api
     command: >
       --providers.docker=true
+      --api.dashboard=true
+      --api.insecure=true
       --entrypoints.web.address=:8000
       --entrypoints.web-interno.address=:80
       --entrypoints.web-secure.address=:8443
+      --entrypoints.web.http.redirections.entrypoint.to=web-secure
+      --entrypoints.web.http.redirections.entrypoint.scheme=https
       --log.level="INFO"
+      --log.filePath="./traefik.log"
       --providers.docker.exposedbydefault=false
       --providers.file.directory=/configuration
       --providers.file.watch=true 
@@ -24,35 +29,34 @@ services:
     ports:
       - 80:8000 # The HTTP port
       - 443:8443 # The HTTPS port
+      - 8080:8080 # traefik dashboard - nao deixar ativo em producao
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/desenvolvimento/sispg/Sistema_Programa_de_Gestao_Susep_prod/docker/traefik-config/:/configuration/
       - /etc/ssl/icpedu/:/certificates/
-      - ./web.config:/app/gateway/web.config
     labels:
      - traefik.enable=true
-    # - traefik.tls.routers.traefik.rule=Host(`traefik.api.localhost`)
-    # - traefik.tls.routers.traefik.entryPoints=web-secure
-    # - traefik.tls.routers.traefik.tls=true
-    # - traefik.tls.services.traefik.loadbalancer.server.port=8080
-     - traefik.http.routers.traefik.rule=Host(`traefik.api.localhost`)
-     - traefik.http.routers.traefik.entryPoints=web-secure
+     - traefik.http.routers.traefik.rule=Host(`sispg.ufpi.br`)
+     - traefik.http.routers.traefik.entryPoints=web,web-secure
      - traefik.http.routers.traefik.tls=true
      - traefik.http.services.traefik.loadbalancer.server.port=8080
+
+#     - traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https
+#     - traefik.http.routers.traefik.middlewares=traefik-https-redirect
+#     - traefik.http.routers.traefik-secure.entrypoints=web-secure
+#     - traefik.http.routers.traefik-secure.rule=Host(`sispg.ufpi.br`)
+#     - traefik.http.routers.traefik-secure.middlewares=app
+#     - traefik.http.routers.traefik-secure.tls=true
+#     - traefik.http.routers.traefik-secure.tls.certresolver=http
+#     - traefik.http.routers.traefik-secure.service=api@internal
      #Redirecionamento https
-     - traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)
-     - traefik.http.routers.http-catchall.entrypoints=web
-     - traefik.http.routers.http-catchall.middlewares=redirect-to-https
-     - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-    
+#     - traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)
+#     - traefik.http.routers.http-catchall.entrypoints=web
+#     - traefik.http.routers.http-catchall.middlewares=redirect-to-https
+#     - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
     networks:
       - pgd
     
-#tls:
-#  certificates:
-#    - certFile: /etc/ssl/icpedu/ufpibr.cert
-#      keyFile: /etc/ssl/icpedu/ufpibr.key
-
   web-api:
     # Futuro oficial do Governo Federal
     image: ghcr.io/spbgovbr/sistema_programa_de_gestao_susep/sgd:v1.8
@@ -69,13 +73,13 @@ services:
     env_file:
       - ./web-api.env
     # Habilitar somente para debug
-    # ports:
-    #   - 8082:80
+    ports:
+      - 8082:80
     labels:
      - traefik.enable=true
      - traefik.http.routers.web-api.rule=PathPrefix(`/`)
-     - traefik.http.routers.web-api.entrypoints=web-interno
-     - traefik.http.routers.web-api.tls=false
+     - traefik.http.routers.web-api.entrypoints=web-interno,web-secure
+     - traefik.http.routers.web-api.tls=true
      - traefik.http.services.web-api.loadbalancer.server.port=80
      - traefik.http.services.web-api.loadbalancer.server.scheme=http
      - traefik.http.routers.web-api.middlewares=stripprefix_web_api
@@ -98,9 +102,10 @@ services:
       - ./api-gateway.env
     labels:
      - traefik.enable=true
-     - traefik.http.routers.gateway.rule=PathPrefix(`/gateway`)
-     - traefik.http.routers.gateway.entrypoints=web
-     - traefik.http.routers.gateway.tls=false
+     - traefik.http.routers.gateway.rule=Host(`sispg.ufpi.br`) && PathPrefix(`/gateway`)
+     #- traefik.http.routers.gateway.rule=PathPrefix(`/gateway`)
+     - traefik.http.routers.gateway.entrypoints=web,web-secure
+     - traefik.http.routers.gateway.tls=true
      - traefik.http.services.gateway.loadbalancer.server.port=80
      - traefik.http.services.gateway.loadbalancer.server.scheme=http
      - traefik.http.routers.gateway.middlewares=gateway_stripprefix
@@ -110,7 +115,7 @@ services:
 
   web-app:
     #image: ghcr.io/spbgovbr/sistema_programa_de_gestao_susep/sgd:v1.8
-    image: susep-1.8.6-ufpi
+    image: susep-1.8.6-01
     # Imagem caso você queira testar na sua máquina
     #image: susep
     command: dotnet Susep.SISRH.WebApp.dll
@@ -120,8 +125,9 @@ services:
     restart: always
     labels:
      - traefik.enable=true
-     - traefik.http.routers.app.rule=PathPrefix(`/`)
-     - traefik.http.routers.app.entrypoints=web-secure
+     - traefik.http.routers.app.rule=Host(`sispg.ufpi.br`) && PathPrefix(`/`)
+     #- traefik.http.routers.app.rule=PathPrefix(`/`)
+     - traefik.http.routers.app.entrypoints=web,web-secure
      - traefik.http.routers.app.tls=true
      - traefik.http.services.app.loadbalancer.server.port=80
      - traefik.http.services.app.loadbalancer.server.scheme=http
